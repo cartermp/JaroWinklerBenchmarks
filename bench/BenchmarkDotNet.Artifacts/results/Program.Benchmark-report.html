@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Program.Benchmark</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.11.3, OS=macOS Mojave 10.14.2 (18C54) [Darwin 18.2.0]
+Intel Core i7-7700HQ CPU 2.80GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
+.NET Core SDK=2.2.100
+  [Host]     : .NET Core 2.2.0 (CoreCLR 4.6.27110.04, CoreFX 4.6.27110.04), 64bit RyuJIT DEBUG
+  DefaultJob : .NET Core 2.2.0 (CoreCLR 4.6.27110.04, CoreFX 4.6.27110.04), 64bit RyuJIT
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>      Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Gen 0/1k Op</th><th>Gen 1/1k Op</th><th>Gen 2/1k Op</th><th>Allocated Memory/Op</th>
+</tr>
+</thead><tbody><tr><td>JaroCurrent</td><td>81.20 us</td><td>2.004 us</td><td>5.750 us</td><td>16.7236</td><td>-</td><td>-</td><td>51.43 KB</td>
+</tr><tr><td>JaroNew</td><td>84.05 us</td><td>1.902 us</td><td>5.550 us</td><td>17.2119</td><td>-</td><td>-</td><td>52.98 KB</td>
+</tr><tr><td>JaroNewStructTuple</td><td>73.01 us</td><td>1.891 us</td><td>5.547 us</td><td>6.5918</td><td>-</td><td>-</td><td>20.62 KB</td>
+</tr></tbody></table>
+</body>
+</html>

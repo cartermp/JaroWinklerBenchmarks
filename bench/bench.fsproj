@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="JaroCurrent.fs" />
+    <Compile Include="JaroNew.fs" />
+    <Compile Include="JarNewStructTuple.fs" />
+    <Compile Include="Names.fs" />
+    <Compile Include="EditDistance.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.3" />
+  </ItemGroup>
+</Project>
