@@ -72,9 +72,8 @@ let IsInEditDistanceProximity (idText: string) suggestion =
     editDistance <= threshold
 
 /// Filters predictions based on edit distance to the given unknown identifier.
-let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) editDistanceFunction =    
-    let uppercaseText = idText.ToUpperInvariant()
-
+let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) editDistanceFunction =
+    let idText = idText.ToUpperInvariant() 
     let demangle (nm:string) =
         if nm.StartsWithOrdinal("( ") && nm.EndsWithOrdinal(" )") then
             let cleanName = nm.[2..nm.Length - 3]
@@ -89,6 +88,8 @@ let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) edit
             let name = name.[2..name.Length - 3]
             name |> Seq.forall (fun c -> c <> ' ')
 
+    let dotIdText = "." + idText
+
     if allSuggestions.Contains idText then [] else // some other parsing error occurred
     allSuggestions
     |> Seq.choose (fun suggestion ->
@@ -99,12 +100,12 @@ let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) edit
         if IsOperatorName suggestion || suggestion.StartsWithOrdinal("_") then None else
         let suggestion:string = demangle suggestion
         let suggestedText = suggestion.ToUpperInvariant()
-        let similarity = editDistanceFunction uppercaseText suggestedText
-        if similarity >= highConfidenceThreshold || suggestion.EndsWithOrdinal("." + idText) then
+        let similarity = editDistanceFunction idText suggestedText
+        if similarity >= highConfidenceThreshold || suggestion.EndsWithOrdinal(dotIdText) then
             Some(similarity, suggestion)
-        elif similarity < minThresholdForSuggestions && suggestedText.Length > minStringLengthForThreshold then
+        elif similarity < minThresholdForSuggestions && suggestion.Length > minStringLengthForThreshold then
             None
-        elif IsInEditDistanceProximity uppercaseText suggestedText then
+        elif IsInEditDistanceProximity idText suggestedText then
             Some(similarity, suggestion)
         else
             None)

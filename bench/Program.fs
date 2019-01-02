@@ -4,7 +4,13 @@ open BenchmarkDotNet.Running
 [<MemoryDiagnoser>]
 type Benchmark() =
     let ident = "phillip"
-    let suggestions = ResizeArray<string>(Names.names)
+    let mutable suggestions = ResizeArray<string>()
+
+    [<GlobalSetup>]
+    member __.Setup() =
+        // 8400 names, created in a fairly lulzworthy way
+        let nms = Names.names @ Names.names @ Names.names @ Names.names @ Names.names @ Names.names @ Names.names        
+        suggestions <- ResizeArray<string>(nms @ nms @ nms @ nms @ nms @ nms)
 
     [<Benchmark>]
     member __.JaroCurrent() = EditDistance.FilterPredictions ident suggestions JaroCurrent.JaroWinklerDistance |> ignore
