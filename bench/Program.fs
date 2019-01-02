@@ -12,7 +12,7 @@ type Benchmark() =
         let nms = Names.names @ Names.names @ Names.names @ Names.names @ Names.names @ Names.names @ Names.names        
         suggestions <- ResizeArray<string>(nms @ nms @ nms @ nms @ nms @ nms)
 
-    [<Benchmark>]
+    [<Benchmark(Baseline=true)>]
     member __.JaroCurrent() = EditDistance.FilterPredictions ident suggestions JaroCurrent.JaroWinklerDistance |> ignore
 
     [<Benchmark>]
