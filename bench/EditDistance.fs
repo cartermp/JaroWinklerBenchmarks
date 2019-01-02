@@ -72,7 +72,7 @@ let IsInEditDistanceProximity (idText: string) suggestion =
     editDistance <= threshold
 
 /// Filters predictions based on edit distance to the given unknown identifier.
-let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) editDistanceFunction =
+let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) editDistanceFunction current =
     let idText = idText.ToUpperInvariant() 
     let demangle (nm:string) =
         if nm.StartsWithOrdinal("( ") && nm.EndsWithOrdinal(" )") then
@@ -101,7 +101,7 @@ let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) edit
         let suggestion:string = demangle suggestion
         let suggestedText = suggestion.ToUpperInvariant()
         let similarity = editDistanceFunction idText suggestedText
-        if similarity >= highConfidenceThreshold || suggestion.EndsWithOrdinal(dotIdText) then
+        if similarity >= highConfidenceThreshold || suggestion.EndsWithOrdinal(if current then "." + idText else dotIdText) then
             Some(similarity, suggestion)
         elif similarity < minThresholdForSuggestions && suggestion.Length > minStringLengthForThreshold then
             None
