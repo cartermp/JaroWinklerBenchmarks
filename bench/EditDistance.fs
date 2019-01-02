@@ -114,3 +114,53 @@ let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) edit
     |> Seq.takeWhile (fun (i, _) -> i < maxSuggestions) 
     |> Seq.map snd 
     |> Seq.toList
+
+let take count (source : seq<'T>) =
+    seq { use e = source.GetEnumerator()
+          let mutable c = count
+          while e.MoveNext() && c > 0 do
+            yield e.Current
+            c <- c - 1 }
+
+/// Filters predictions based on edit distance to the given unknown identifier.
+let FilterPredictionsOptimize (idText:string) (allSuggestions: ResizeArray<string>) editDistanceFunction current =
+    let idText = idText.ToUpperInvariant() 
+    let demangle (nm:string) =
+        if nm.StartsWithOrdinal("( ") && nm.EndsWithOrdinal(" )") then
+            let cleanName = nm.[2..nm.Length - 3]
+            cleanName
+        else nm
+
+    /// Returns `true` if given string is an operator display name, e.g. ( |>> )
+    let IsOperatorName (name: string) =
+        if not (name.StartsWithOrdinal("( ") && name.EndsWithOrdinal(" )")) then
+            false
+        else
+            let name = name.[2..name.Length - 3]
+            name |> Seq.forall (fun c -> c <> ' ')
+
+    let dotIdText = "." + idText
+
+    if allSuggestions.Contains idText then [] else // some other parsing error occurred
+    seq {
+        for suggestion in allSuggestions do
+            // Because beginning a name with _ is used both to indicate an unused
+            // value as well as to formally squelch the associated compiler
+            // error/warning (FS1182), we remove such names from the suggestions,
+            // both to prevent accidental usages as well as to encourage good taste
+            if IsOperatorName suggestion || suggestion.StartsWithOrdinal("_") then () else
+            let suggestion:string = demangle suggestion
+            let suggestedText = suggestion.ToUpperInvariant()
+            let similarity = editDistanceFunction idText suggestedText
+            if similarity >= highConfidenceThreshold || suggestion.EndsWithOrdinal(if current then "." + idText else dotIdText) then
+                yield (similarity, suggestion)
+            elif similarity < minThresholdForSuggestions && suggestion.Length > minStringLengthForThreshold then
+                ()
+            elif IsInEditDistanceProximity idText suggestedText then
+                yield similarity, suggestion
+            else
+                ()
+    }
+    |> Seq.sortByDescending fst
+    |> take maxSuggestions
+    |> Seq.toList
