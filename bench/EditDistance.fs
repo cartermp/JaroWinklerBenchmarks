@@ -73,7 +73,7 @@ let IsInEditDistanceProximity (idText: string) suggestion =
 
 /// Filters predictions based on edit distance to the given unknown identifier.
 let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) editDistanceFunction =
-    let idText = idText.ToUpperInvariant() 
+    //let idText = idText.ToUpperInvariant() 
     let demangle (nm:string) =
         if nm.StartsWithOrdinal("( ") && nm.EndsWithOrdinal(" )") then
             let cleanName = nm.[2..nm.Length - 3]
@@ -99,7 +99,7 @@ let FilterPredictions (idText:string) (allSuggestions: ResizeArray<string>) edit
         // both to prevent accidental usages as well as to encourage good taste
         if IsOperatorName suggestion || suggestion.StartsWithOrdinal("_") then None else
         let suggestion:string = demangle suggestion
-        let suggestedText = suggestion.ToUpperInvariant()
+        let suggestedText = suggestion//.ToUpperInvariant()
         let similarity = editDistanceFunction idText suggestedText
         if similarity >= highConfidenceThreshold || suggestion.EndsWithOrdinal(dotIdText) then
             Some(similarity, suggestion)
