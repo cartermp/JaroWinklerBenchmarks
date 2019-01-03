@@ -37,10 +37,10 @@ let jaro (s1: string) (s2: string) =
             if i < s1.Length && j < s2.Length then
                 let struct (ti, ci) = nextChar s1 s2 i ' '
                 let struct (tj, cj) = nextChar s2 s1 j ' '
-                if ci <> cj then
-                    loop (ti + 1) (tj + 1) (mismatches + 1) (c1length + 1) (c2length + 1)
-                else
-                    loop (ti + 1) (tj + 1) mismatches (c1length + 1) (c2length + 1)
+                let mismatches =
+                    if ci <> cj then mismatches + 1
+                    else mismatches
+                loop (ti + 1) (tj + 1) mismatches (c1length + 1) (c2length + 1)
             else struct (i, j, mismatches, c1length, c2length)
 
         let struct (i, j, mismatches, c1length, c2length) = loop 0 0 0 0 0
@@ -48,10 +48,10 @@ let jaro (s1: string) (s2: string) =
         let rec loop (s1:string) (s2:string) i length =
             if i < s1.Length - 1 then
                 let c = s1.[i]
-                if existsInWin c s2 i matchRadius then 
-                    loop s1 s2 (i + 1) (length + 1)
-                else
-                    loop s1 s2 (i + 1) length
+                let length =
+                    if existsInWin c s2 i matchRadius then length + 1
+                    else length
+                loop s1 s2 (i + 1) length
             else
                 length
         let c1length = loop s1 s2 i c1length |> float

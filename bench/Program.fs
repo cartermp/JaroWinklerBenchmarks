@@ -22,6 +22,15 @@ type Benchmark() =
     [<Benchmark>]
     member __.JaroNewStructTuple() = EditDistance.FilterPredictions ident suggestions JaroNewStructTuple.JaroWinklerDistance false |> ignore
 
+    [<Benchmark>]
+    member __.JaroCurrentOptimize() = EditDistance.FilterPredictionsOptimize ident suggestions JaroCurrent.JaroWinklerDistance true |> ignore
+
+    [<Benchmark>]
+    member __.JaroNewOptimize() = EditDistance.FilterPredictionsOptimize ident suggestions JaroNew.JaroWinklerDistance false |> ignore
+
+    [<Benchmark>]
+    member __.JaroNewStructTupleOptimize() = EditDistance.FilterPredictionsOptimize ident suggestions JaroNewStructTuple.JaroWinklerDistance false |> ignore
+
 [<EntryPoint>]
 let main _ =
     let summary = BenchmarkRunner.Run<Benchmark>()
